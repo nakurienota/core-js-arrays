@@ -21,11 +21,7 @@
  *    getIntervalArray(3, 3) => [ 3 ]
  */
 function getIntervalArray(start, end) {
-  const result = [];
-  for (let i = start; i <= end; i += 1) {
-    result.push(i);
-  }
-  return result;
+  return Array.from({ length: end - start + 1 }, (v, k) => start + k);
 }
 
 /**
@@ -324,7 +320,7 @@ function flattenArray(nestedArray) {
  *   selectMany(['one','two','three'], (x) => x.split('')) =>   ['o','n','e','t','w','o','t','h','r','e','e']
  */
 function selectMany(arr, childrenSelector) {
-  return arr.flatMap((el) => childrenSelector.apply(el));
+  return arr.reduce((prev, curr) => prev.concat(childrenSelector(curr)), []);
 }
 
 /**
@@ -340,8 +336,13 @@ function selectMany(arr, childrenSelector) {
  *   calculateBalance([ [ 10, 8 ], [ 1, 5 ] ])  => (10 - 8) + (1 - 5) = 2 + -4 = -2
  *   calculateBalance([]) => 0
  */
-function calculateBalance(/* arr */) {
-  throw new Error('Not implemented');
+function calculateBalance(arr) {
+  if (arr.length === 0) return 0;
+  let result = 0;
+  for (let i = 0; i < arr.length; i += 1) {
+    result += arr[i][0] - arr[i][1];
+  }
+  return result;
 }
 
 /**
@@ -373,11 +374,7 @@ function createChunks(/* arr, chunkSize */) {
  *    generateOdds(5) => [ 1, 3, 5, 7, 9 ]
  */
 function generateOdds(len) {
-  const result = [];
-  for (let i = 0; i < len * 2; i += 1) {
-    if (!(i % 2 === 0)) result.add(i);
-  }
-  return result;
+  return Array.from({ length: len }, (v, k) => k * 2 + 1);
 }
 
 /**
@@ -408,8 +405,8 @@ function getElementByIndices(/* arr, indices */) {
  *  getFalsyValuesCount([ -1, 'false', null, 0 ]) => 2
  *  getFalsyValuesCount([ null, undefined, NaN, false, 0, '' ]) => 6
  */
-function getFalsyValuesCount(/* arr */) {
-  throw new Error('Not implemented');
+function getFalsyValuesCount(arr) {
+  return arr.reduce((prev, curr) => prev + !curr, 0);
 }
 
 /**
@@ -430,10 +427,12 @@ function getFalsyValuesCount(/* arr */) {
  *                              [0,0,0,1,0],
  *                              [0,0,0,0,1]]
  */
-function getIdentityMatrix(/* n */) {
-  throw new Error('Not implemented');
+function getIdentityMatrix(n) {
+  const result = Array.from({ length: n }, () => []);
+  return result.map((item, index) =>
+    Array.from({ length: n }, (v, k) => (k === index ? 1 : 0))
+  );
 }
-
 /**
  * Returns an array containing indices of odd elements in the input array.
  *
@@ -527,13 +526,10 @@ function findLongestIncreasingSubsequence(/* nums */) {
  *  propagateItemsByPositionIndex([ 1,2,3,4,5 ]) => [ 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5 ]
  */
 function propagateItemsByPositionIndex(arr) {
-  const result = [];
-  for (let i = 0; i <= arr.length; i += 1) {
-    for (let j = 0; j <= i; i += 1) {
-      result.add(arr[i]);
-    }
-  }
-  return result;
+  return arr.reduce(
+    (prev, curr, index) => prev.concat(new Array(index + 1).fill(curr)),
+    []
+  );
 }
 
 /**
@@ -566,8 +562,20 @@ function shiftArray(/* arr, n */) {
  *   sortDigitNamesByNumericOrder([ 'nine','eight','nine','eight' ]) => [ 'eight','eight','nine','nine']
  *   sortDigitNamesByNumericOrder([ 'one','one','one','zero' ]) => [ 'zero','one','one','one' ]
  */
-function sortDigitNamesByNumericOrder(/* arr */) {
-  throw new Error('Not implemented');
+function sortDigitNamesByNumericOrder(arr) {
+  const items = {
+    zero: 0,
+    one: 1,
+    two: 2,
+    three: 3,
+    four: 4,
+    five: 5,
+    six: 6,
+    seven: 7,
+    eight: 8,
+    nine: 9,
+  };
+  return arr.sort((a, b) => items[a] - items[b]);
 }
 
 /**
@@ -589,8 +597,17 @@ function sortDigitNamesByNumericOrder(/* arr */) {
  *   swapHeadAndTail([]) => []
  *
  */
-function swapHeadAndTail(/* arr */) {
-  throw new Error('Not implemented');
+function swapHeadAndTail(arr) {
+  const isOdd = arr.length % 2 === 1;
+  const middle = parseInt(arr.length / 2, 10) + (isOdd ? 0 : -1);
+
+  return arr.map((value, index) => {
+    const diff = middle - index;
+
+    if (diff > 0 || (diff === 0 && !isOdd)) return arr[middle + index + 1];
+    if (diff < 0) return arr[index - middle - 1];
+    return value;
+  });
 }
 
 module.exports = {
